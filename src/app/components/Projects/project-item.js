@@ -1,7 +1,5 @@
 // import Image from "next/image";
 import Image from "next/legacy/image";
-import { Result } from "postcss";
-
 
 export default function ProjectItem({data}){
 
@@ -13,6 +11,16 @@ export default function ProjectItem({data}){
     const tags = data.properties.Tags.multi_select
     const start = data.properties.WorkPeriod.date.start
     const end = data.properties.WorkPeriod.date.end
+    const notion = data.properties.Notion.url
+
+
+    let fileUrl;
+
+    if (data.properties && data.properties.Files && data.properties.Files.files && data.properties.Files.files.length > 0) {
+    fileUrl = data.properties.Files.files[0].file.url;
+    } else {
+    console.error("파일 URL을 찾을 수 없습니다.");
+    }
 
     const calculatedPeriod = (start, end) => {
         const startDateStringArray = start.split('-');
@@ -42,10 +50,12 @@ export default function ProjectItem({data}){
             <div className="p-4 flex flex-col">
             <h1 className="text-2xl font-bold">{title}</h1>
             <h3 className="mt-4 text-xl">{description}</h3>
-            <a href={githubLink}>깃허브 바로가기</a>
-            <a href={youtube}>시연영상 바로가기</a>
+            {githubLink && (<a href={githubLink}>깃허브 바로가기</a>)}
+            {youtube && (<a href={youtube}>시연영상 바로가기</a>)}
+            {fileUrl && (<a href={fileUrl}>문서 바로가기</a>)}
+            {notion && (<a href={notion}>노션 바로가기</a>)}
             <p className="my-1">작업기간 : {start} ~ {end} ({calculatedPeriod(start, end)}일)</p>
-            <div className="flex items-start mt-2">
+            <div className="flex items-start mt-2 flex-wrap">
                 {tags.map((aTag)=>(
                     <h1 className="px-2 py-1 mr-2 rounded-md bg-sky-200 dark:bg-sky-700 w-30 mb-2" key={aTag.id}>{aTag.name}</h1>
                 ))}
